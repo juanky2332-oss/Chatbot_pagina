@@ -1,9 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import OpenAI from 'openai';
-// Eliminamos imports de servicios externos para evitar errores de "archivo no encontrado"
-// import { sendMessageToGemini } from '../services/geminiService'; 
 
-// Definimos los tipos aquí mismo para ser robustos
 export enum Sender {
   USER = 'user',
   BOT = 'bot'
@@ -16,37 +13,35 @@ export interface Message {
   timestamp: Date;
 }
 
-// --- SERVICIO OPENAI INTEGRADO ---
 const sendMessageToOpenAI = async (message: string): Promise<string> => {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
   
   if (!apiKey) {
-    console.error("Falta la API Key (VITE_OPENAI_API_KEY)");
-    return "Error de configuración: API Key no encontrada.";
+    console.error("Falta la API Key");
+    return "Error de configuración.";
   }
 
   try {
     const openai = new OpenAI({
       apiKey: apiKey,
-      dangerouslyAllowBrowser: true // Necesario para Vite
+      dangerouslyAllowBrowser: true
     });
 
     const completion = await openai.chat.completions.create({
       messages: [
-        { role: "system", content: "Eres el asistente técnico de ESGAS. Responde de forma breve y profesional." },
+        { role: "system", content: "Eres el asistente técnico de ESGAS." },
         { role: "user", content: message }
       ],
       model: "gpt-3.5-turbo",
     });
 
-    return completion.choices[0]?.message?.content || "No he podido generar una respuesta.";
+    return completion.choices[0]?.message?.content || "Sin respuesta.";
   } catch (error) {
-    console.error("Error OpenAI:", error);
-    return "Error de conexión con el asistente.";
+    console.error(error);
+    return "Error de conexión.";
   }
 };
 
-// --- ICONO CORREGIDO (Sin errores de sintaxis) ---
 export const IndustrialBotIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -61,28 +56,17 @@ export const IndustrialBotIcon: React.FC<{ className?: string }> = ({ className 
     </defs>
     <rect x="20" y="22" width="60" height="54" rx="12" fill="url(#sb)" stroke="#4B5563" strokeWidth="2"/>
     <rect x="26" y="32" width="48" height="28" rx="6" fill="#111827"/>
-    
-    {/* Ojos */}
     <ellipse cx="40" cy="44" rx="6" ry="7" fill="#38BDF8" className="animate-pulse"/>
     <ellipse cx="60" cy="44" rx="6" ry="7" fill="#38BDF8" className="animate-pulse"/>
-    
-    {/* Boca */}
     <path d="M42 53Q50 58 58 53" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="round"/>
-    
-    {/* Antenas laterales (CORREGIDO: ircle>) */}
     ircle cx="16" cy="48" r="4" fill="url(#ba)"/>
     ircle cx="84" cy="48" r="4" fill="url(#ba)"/>
-    
-    {/* Antena superior */}
     <line x1="50" y1="22" x2="50" y2="12" stroke="#9CA3AF" strokeWidth="3"/>
     ircle cx="50" cy="10" r="4" fill="#10B981" className="animate-pulse"/>
-    
-    {/* Base */}
     <path d="M30 82C30 82 40 76 50 76C60 76 70 82 70 82V90H30V82Z" fill="#374151"/>
   </svg>
 );
 
-// --- COMPONENTE PRINCIPAL ---
 interface ChatWidgetProps {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
@@ -92,7 +76,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome-1',
-      text: 'Bienvenido a ESGAS. Soy su asistente técnico virtual.',
+      text: 'Bienvenido a ESGAS. ¿En qué puedo ayudarte?',
       sender: Sender.BOT,
       timestamp: new Date()
     }
@@ -131,7 +115,6 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
     setIsLoading(true);
 
     try {
-      // Usamos la función interna de OpenAI
       const responseText = await sendMessageToOpenAI(userMessage.text);
       
       const botMessage: Message = {
@@ -146,7 +129,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
       console.error(error);
       const errorMessage: Message = {
           id: (Date.now() + 1).toString(),
-          text: "Lo siento, hubo un error técnico.",
+          text: "Error técnico.",
           sender: Sender.BOT,
           timestamp: new Date()
       }
@@ -162,7 +145,6 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
     }
   };
 
-  // Helper simple para formato
   const renderMessageText = (text: string) => {
      return <div className="whitespace-pre-wrap">{text}</div>;
   };
