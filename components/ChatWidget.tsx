@@ -2,53 +2,118 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Message, Sender } from '../types';
 import { sendMessageToOpenAI } from '../services/openaiService';
 
-// Custom ESGAS Bot Icon (Silver/Metallic + Blue) - "Pensativo y Alegre"
-export const IndustrialBotIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+// Custom ESGAS "Happy Dynamic Bearing" Bot Icon
+// Design: A ball bearing with arms, legs, and a very happy face. Colorful and dynamic.
+export const RollingBearingIcon: React.FC<{ className?: string, isAnimating?: boolean }> = ({ className, isAnimating }) => (
+  <svg viewBox="0 0 100 120" className={`${className} overflow-visible`} fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      {/* Silver Gradient for Body */}
-      <linearGradient id="silverBody" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <linearGradient id="metalGradient" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
         <stop offset="0" stopColor="#F3F4F6" />
         <stop offset="1" stopColor="#9CA3AF" />
       </linearGradient>
-      {/* Blue Gradient for Accents */}
-      <linearGradient id="blueAccent" x1="0" y1="0" x2="100" y2="0" gradientUnits="userSpaceOnUse">
-        <stop offset="0" stopColor="#0EA5E9" />
-        <stop offset="1" stopColor="#0284C7" />
+      <radialGradient id="ballGradient" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stopColor="#E5E7EB" />
+        <stop offset="1" stopColor="#6B7280" />
+      </radialGradient>
+      {/* Vibrant Colors */}
+      <linearGradient id="limbGradient" x1="0" y0="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#FB923C" /> {/* Orange-400 */}
+        <stop offset="1" stopColor="#EA580C" /> {/* Orange-600 */}
       </linearGradient>
     </defs>
 
-    {/* Head Shape */}
-    <rect x="20" y="22" width="60" height="54" rx="12" fill="url(#silverBody)" stroke="#4B5563" strokeWidth="2" />
+    {/* LEGS - Dancing/Standing */}
+    <g transform="translate(0, 10)">
+      {/* Left Leg */}
+      <path d="M35 90 L30 110 L20 110" stroke="#4B5563" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M35 90 L30 110 L20 110" stroke="url(#limbGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
+      {/* Right Leg */}
+      <path d="M65 90 L70 110 L80 110" stroke="#4B5563" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M65 90 L70 110 L80 110" stroke="url(#limbGradient)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
+    </g>
 
-    {/* Face Screen (Dark Glass) */}
-    <rect x="26" y="32" width="48" height="28" rx="6" fill="#111827" />
+    {/* ARMS - One Waving */}
+    <g>
+      {/* Left Arm (Down/Relaxed) */}
+      <path d="M10 50 Q5 70 20 80" stroke="#4B5563" strokeWidth="4" strokeLinecap="round" />
+      <path d="M10 50 Q5 70 20 80" stroke="url(#limbGradient)" strokeWidth="3" strokeLinecap="round" />
 
-    {/* Eyes (Glowing Blue - Expressive/Thinking) */}
-    {/* Left Eye */}
-    <ellipse cx="40" cy="44" rx="6" ry="7" fill="#38BDF8" className="animate-pulse" />
-    {/* Right Eye */}
-    <ellipse cx="60" cy="44" rx="6" ry="7" fill="#38BDF8" className="animate-pulse" />
+      {/* Right Arm (Waving Animation) */}
+      <g className={isAnimating ? "animate-wave origin-bottom-left" : ""} style={{ transformOrigin: '80px 50px' }}>
+        <path d="M88 50 Q105 30 95 10" stroke="#4B5563" strokeWidth="4" strokeLinecap="round" />
+        <path d="M88 50 Q105 30 95 10" stroke="url(#limbGradient)" strokeWidth="3" strokeLinecap="round" />
+        {/* Hand */}
+        <circle cx="95" cy="10" r="4" fill="#EA580C" />
+      </g>
+    </g>
 
-    {/* Eyebrows (Expression: One slightly raised = Pensativo/Attentive) */}
-    <line x1="34" y1="36" x2="46" y2="36" stroke="#38BDF8" strokeWidth="2" strokeLinecap="round" />
-    <line x1="54" y1="35" x2="66" y2="33" stroke="#38BDF8" strokeWidth="2" strokeLinecap="round" />
+    {/* BODY - The Bearing */}
+    <g transform="translate(0, 0)"> {/* Shifted up slightly to fit legs */}
+      {/* Outer Race */}
+      <circle cx="50" cy="50" r="42" fill="url(#metalGradient)" stroke="#374151" strokeWidth="2" />
+      <circle cx="50" cy="50" r="30" fill="#1F2937" stroke="#374151" strokeWidth="1" />
 
-    {/* Smile (Happy/Helpful) */}
-    <path d="M42 53Q50 58 58 53" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Bearing Balls (Rolling) */}
+      <g className={isAnimating ? "animate-spin-slow" : ""}>
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+          <circle
+            key={i}
+            cx={50 + 36 * Math.cos((angle * Math.PI) / 180)}
+            cy={50 + 36 * Math.sin((angle * Math.PI) / 180)}
+            r="5"
+            fill="url(#ballGradient)"
+            stroke="#4B5563"
+            strokeWidth="1"
+          />
+        ))}
+      </g>
 
-    {/* Ears / Antennas */}
-    <circle cx="16" cy="48" r="4" fill="url(#blueAccent)" />
-    <circle cx="84" cy="48" r="4" fill="url(#blueAccent)" />
-    <path d="M20 48H26" stroke="#9CA3AF" strokeWidth="3" />
-    <path d="M74 48H80" stroke="#9CA3AF" strokeWidth="3" />
+      {/* Inner Race (The Face Area) */}
+      <circle cx="50" cy="50" r="24" fill="#F0F9FF" stroke="#4B5563" strokeWidth="2" /> {/* Light Blue Tint for face */}
 
-    {/* Top Antenna */}
-    <line x1="50" y1="22" x2="50" y2="12" stroke="#9CA3AF" strokeWidth="3" />
-    <circle cx="50" cy="10" r="4" fill="#10B981" className="animate-pulse" />
+      {/* FACE - Very Happy */}
+      <g className="animate-bounce-subtle">
+        {/* Eyes - Happy Arches or Big Circles? Big Circles for cuteness */}
+        <ellipse cx="42" cy="46" rx="5" ry="6" fill="#1F2937" />
+        <ellipse cx="58" cy="46" rx="5" ry="6" fill="#1F2937" />
 
-    {/* Neck/Shoulders */}
-    <path d="M30 82C30 82 40 76 50 76C60 76 70 82 70 82V90H30V82Z" fill="#374151" />
+        {/* Highlights */}
+        <circle cx="43" cy="44" r="2" fill="white" />
+        <circle cx="59" cy="44" r="2" fill="white" />
+
+        {/* Cheeks */}
+        <circle cx="38" cy="52" r="3" fill="#F472B6" opacity="0.6" />
+        <circle cx="62" cy="52" r="3" fill="#F472B6" opacity="0.6" />
+
+        {/* Mouth - Big Grin */}
+        <path d="M42 55 Q50 62 58 55" stroke="#374151" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      </g>
+    </g>
+
+    {/* CSS for internal SVG animations */}
+    <style>{`
+      @keyframes spin-slow {
+        from { transform: rotate(0deg); transform-origin: 50px 50px; }
+        to { transform: rotate(360deg); transform-origin: 50px 50px; }
+      }
+      .animate-spin-slow {
+        animation: spin-slow 6s linear infinite;
+      }
+      @keyframes bounce-subtle {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+      }
+      .animate-bounce-subtle {
+        animation: bounce-subtle 1.5s ease-in-out infinite;
+      }
+      @keyframes wave {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(15deg); }
+      }
+      .animate-wave {
+        animation: wave 1s ease-in-out infinite;
+      }
+    `}</style>
   </svg>
 );
 
@@ -61,7 +126,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome-1',
-      text: 'Bienvenido a ESGAS. Soy su asistente técnico virtual.',
+      // CAMBIO 1: Nombre de bienvenida
+      text: 'Bienvenido a Flownexion. Soy su asistente técnico virtual.',
       sender: Sender.BOT,
       timestamp: new Date()
     },
@@ -210,8 +276,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
             className="relative group transition-transform hover:scale-105 active:scale-95"
           >
             {/* Background WHITE requested, with blue border to stand out */}
-            <div className="bg-white hover:bg-gray-50 transition-colors duration-300 rounded-full p-2 shadow-2xl border-4 border-sky-600 w-16 h-16 flex items-center justify-center overflow-hidden">
-              <IndustrialBotIcon className="w-12 h-12" />
+            <div className="bg-white hover:bg-gray-50 transition-all duration-300 rounded-full p-1 shadow-2xl border-4 border-sky-600 w-20 h-20 flex items-center justify-center overflow-hidden animate-bounce-attention">
+              <RollingBearingIcon className="w-16 h-16" isAnimating={true} />
             </div>
             {/* Notification Dot - GREEN for 'Operativo' */}
             <span className="absolute top-0 right-0 flex h-4 w-4">
@@ -230,23 +296,26 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
       {/* Chat Window */}
       {isOpen && (
         <div className="pointer-events-auto bg-white rounded-xl shadow-2xl w-[90vw] sm:w-[380px] h-[600px] max-h-[85vh] flex flex-col overflow-hidden border border-gray-200 animate-fade-in-up ring-1 ring-black/10">
-          {/* Header */}
-          <div className="bg-slate-900 p-4 flex justify-between items-center text-white shadow z-10 border-b border-sky-600 border-b-2">
+          
+          {/* CAMBIO 2: HEADER BLANCO y LETRAS OSCURAS */}
+          <div className="bg-white p-4 flex justify-between items-center text-gray-800 shadow z-10 border-b border-gray-200 border-b-2">
             <div className="flex items-center gap-3">
-              <div className="bg-white p-1 rounded-full border border-gray-200 shadow-inner">
-                <IndustrialBotIcon className="w-8 h-8" />
+              <div className="bg-white p-1 rounded-full border border-gray-200 shadow-sm">
+                <RollingBearingIcon className="w-9 h-9" />
               </div>
               <div>
-                <h3 className="font-bold text-sm tracking-wide text-white">Asistente ESGAS</h3>
+                {/* CAMBIO 3: NOMBRE DEL ASISTENTE */}
+                <h3 className="font-bold text-sm tracking-wide text-gray-900">Asistente Flownexion</h3>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.6)]"></span>
-                  <p className="text-[10px] text-sky-200 font-medium uppercase tracking-wider">Online</p>
+                  {/* Cambio: Texto 'Online' un poco más oscuro */}
+                  <p className="text-[10px] text-green-600 font-medium uppercase tracking-wider">Online</p>
                 </div>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-white hover:bg-white/10 rounded-lg p-1.5 transition-colors"
+              className="text-gray-400 hover:text-gray-800 hover:bg-gray-100 rounded-lg p-1.5 transition-colors"
               aria-label="Cerrar chat"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -263,14 +332,14 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
                 {/* Avatar for Bot in Message */}
                 {msg.sender === Sender.BOT && (
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center self-start shadow-sm overflow-hidden mt-1">
-                    <IndustrialBotIcon className="w-6 h-6" />
+                    <RollingBearingIcon className="w-7 h-7" />
                   </div>
                 )}
 
                 <div
                   className={`max-w-[85%] px-4 py-3 text-sm shadow-sm ${msg.sender === Sender.USER
-                      ? 'bg-sky-600 text-white rounded-2xl rounded-tr-sm'
-                      : 'bg-white text-gray-800 border border-gray-200 rounded-2xl rounded-tl-sm'
+                    ? 'bg-sky-600 text-white rounded-2xl rounded-tr-sm'
+                    : 'bg-white text-gray-800 border border-gray-200 rounded-2xl rounded-tl-sm'
                     }`}
                 >
                   {renderMessageText(msg.text)}
@@ -286,7 +355,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
             {isLoading && (
               <div className="flex justify-start gap-2">
                 <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center self-start overflow-hidden mt-1">
-                  <IndustrialBotIcon className="w-6 h-6" />
+                  <RollingBearingIcon className="w-7 h-7" />
                 </div>
                 <div className="bg-white border border-gray-200 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm flex gap-1.5 items-center">
                   <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
@@ -315,8 +384,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
                 onClick={handleSendMessage}
                 disabled={isLoading || !inputText.trim()}
                 className={`p-2.5 rounded-lg flex-shrink-0 ${inputText.trim()
-                    ? 'bg-sky-600 text-white hover:bg-sky-700 shadow-md transform hover:scale-105'
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  ? 'bg-sky-600 text-white hover:bg-sky-700 shadow-md transform hover:scale-105'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   } transition-all duration-200`}
               >
                 {/* Paper Plane Icon */}
@@ -326,7 +395,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ isOpen, setIsOpen }) => {
               </button>
             </div>
             <div className="text-center mt-2">
-              <span className="text-[10px] text-gray-400 font-medium">Powered by ESGAS AI Tech</span>
+               {/* CAMBIO 4: FOOTER DEL CHAT */}
+              <span className="text-[10px] text-gray-400 font-medium">Powered by Flownexion AI Tech</span>
             </div>
           </div>
         </div>

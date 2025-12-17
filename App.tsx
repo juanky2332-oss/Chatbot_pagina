@@ -45,7 +45,8 @@ const App: React.FC = () => {
       <footer className="bg-white border-t border-gray-200 mt-12">
         <div className="container mx-auto py-8 px-6">
             <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
-                <p>&copy; {new Date().getFullYear()} ESGAS Accesorios S.L. - Plataforma B2B.</p>
+                {/* CAMBIO AQUÍ: Nombre actualizado a Flownexion */}
+                <p>&copy; {new Date().getFullYear()} Flownexion - Plataforma B2B.</p>
                 <div className="flex gap-4 mt-4 md:mt-0">
                     <a href="#" className="hover:text-gray-900">Aviso Legal</a>
                     <a href="#" className="hover:text-gray-900">Política de Privacidad</a>
